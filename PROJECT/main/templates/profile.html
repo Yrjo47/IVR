@@ -1,0 +1,19 @@
+{% extends  'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="center-column">
+    <h4>Your account:</h4>
+    <h6>User name: {{user.username}}</h6>
+
+    <h4>Change password:</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <h5></h5>
+        <button type="submit" class="button">Submit</button>
+    </form>
+</div>
+
+{% endblock %}

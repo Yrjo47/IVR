@@ -1,0 +1,163 @@
+<!-- templates/registration/login.html -->
+{% extends 'base.html' %}
+{%load static%}
+{% block style %}
+
+{% if not user.is_authenticated %}
+<style>
+body{
+    background: url("../../static/media/img.png") no-repeat center center !important;
+    background-size: cover !important;
+
+
+    }
+</style>
+{% endif %}
+{% endblock %}
+{% block content %}
+
+
+
+<script>
+    var audioObj = new Audio("{% static "audio1.mp3" %}");
+
+	function PlayAudio() {
+        audioObj.play();
+	}
+
+	function alert3(message, title, buttonText) {
+
+    buttonText = (buttonText == undefined) ? "OK" : buttonText;
+    title = (title == undefined) ? "" : title;
+
+    var div = $('<div>');
+    div.html(message);
+    div.attr('title', title);
+    div.dialog({
+        autoOpen: true,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        buttons: [{
+            text: buttonText,
+            click: function () {
+                $(this).dialog("close");
+                div.remove();
+                window.location.reload(false);
+            }
+        },]
+    });
+    }
+
+    function alert2(message, buttonText) {
+
+    buttonText = (buttonText == undefined) ? "Yes" : buttonText;
+
+    var div = $('<div>');
+    div.html(message);
+    div.dialog({
+        autoOpen: true,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        buttons: [{
+            text: buttonText,
+            click: function () {
+                $(this).dialog("close");
+                div.remove();
+            }
+        },]
+    });
+    }
+
+    function color(id, text, name) {
+        var a = document.getElementById(String(id));
+        a.style.background = '#7f6a7c';
+        console.log(name);
+        alert3(text, name);
+    }
+
+	function Alarm(time, id, text, name) {
+	console.log(id);
+    	setTimeout(PlayAudio, time);
+    	setTimeout(color, time, id, text, name);
+	}
+
+
+
+
+
+</script>
+{% if user.is_authenticated %}
+<div style = "text-align: center; border: 1px solid" class="center-column">
+
+    <form id="form" method="POST" action="/">
+        {% csrf_token %}
+        <h2>Create new alarm here:</h2>
+        <input id = "name" name='title' placeholder='Name...'>
+        <textarea style="width:560px; " name="text" cols="40" rows="5"
+                  placeholder='You can add some text here'></textarea>
+        <p>
+            <label for="localdate">Дата и время: </label>
+            <input type="datetime-local" id="localdate" name="settedtime"/>
+        </p>
+        <input id='submit' class="button" type="submit" value='Submit' name="Create Clock">
+
+    </form>
+</div>
+
+<div  style = "text-align: center; border: 1px solid" class="center-column">
+    <text style = "color: #343a40 dx ">After adding a new alarm, do not close the tab or turn off your computer</text>
+    <div id='todo' class="todo-list">
+</div>
+    {% for task in tasks %}
+    <div id = "{{task.id}}" class="item-row">
+
+        <span>{{task}} - {{task.settedtime}}</span>
+    </div>
+
+    <script>
+        var time = (Number({{task.settedtime.timestamp}}) * 1000) - (new Date()).getTime() + new Date(0).getTimezoneOffset() * 60000;
+        if (time > 0)
+            Alarm(time, "{{task.id}}", "{{task.text}}", "{{task.title}}");
+    </script>
+    {% endfor %}
+</div>
+</div>>
+
+
+{% endif %}
+
+<script>
+
+    {% if user.is_authenticated and tasks %}
+     alert2('Do you want the set alarms to go off?');
+    {% endif %}
+
+	$('#submit1').on('click', ()=>{
+
+    let formData = new FormData(document.getElementById('form'));
+                $.ajax({
+                    url: '/',
+                    data: formData,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                });
+                console.log(formData);
+                var div = document.createElement('div');
+                div.innerHTML = formData.get('title') + ' - ' + formData.get('settedtime');
+                div.setAttribute('class', 'item-row');
+                document.getElementById('todo').appendChild(div);
+                var time = new Date(formData.get('settedtime')) - new Date();
+                console.log(time);
+                if (time > 0)
+                Alarm(time);
+            });
+
+
+
+</script>
+
+{% endblock content %}
+

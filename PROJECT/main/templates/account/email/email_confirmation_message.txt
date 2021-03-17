@@ -1,0 +1,4 @@
+{% load account_tags %}
+{% load i18n %}
+
+{% block content %}{% autoescape off %}{% user_display user as user_display %}For confirming account {{ user_display }} on the "AlarmClock" click here {{ activate_url }}{% endautoescape %}{% endblock %}
